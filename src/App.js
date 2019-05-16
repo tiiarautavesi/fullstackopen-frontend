@@ -7,14 +7,17 @@ import NoteForm from './components/NoteForm'
 import noteService from './services/notes'
 import loginService from './services/login' 
 
+const daysArray = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'TODO']
 
 const App = () => {
-  const [notes, setNotes] = useState([]) 
-  const [newNote, setNewNote] = useState('')
+  const [notes, setNotes] = useState([])
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [time, setTime] = useState('')
+  const [day, setDay] = useState('')
+  const [content, setContent] = useState('')
   const [user, setUser] = useState(null)
 
   useEffect(() => {
@@ -44,7 +47,22 @@ const App = () => {
       })
       .catch(error => {
         alert(
-          `muistiinpano '${note.content}' on jo valitettavasti poistettu palvelimelta`
+          `note: '${note.content}' has already been removed from the database`
+        );
+        setNotes(notes.filter(n => n.id !== id))
+      })
+  }
+
+  const removeNote = id => {
+    const note = notes.find(n => n.id === id)
+
+    noteService
+      .remove(note).then(returnedNote => {
+        setNotes(notes.filter(n => n.id !== id))
+      })
+      .catch(error => {
+        alert(
+          `note: '${note.content}' has already been removed from the database`
         );
         setNotes(notes.filter(n => n.id !== id))
       })
@@ -57,29 +75,57 @@ const App = () => {
   const addNote = (event) => {
     event.preventDefault()
     const noteObject = {
-      content: newNote,
+      time: time,
+      day: day,
+      content: content,
       date: new Date().toISOString(),
       important: Math.random() > 0.5
     }
 
+    console.log(noteObject);
     noteService
       .create(noteObject).then(returnedNote => {
         setNotes(notes.concat(returnedNote))
-        setNewNote('')
       })
   }
 
   const handleNoteChange = (event) => {
-    setNewNote(event.target.value)
+    setDay('')
+    setTime('')
+    setContent('')
   }
 
-  const rows = () => notesToShow.map(note =>
+  const rows = (weekday) => notesToShow.map(note =>
+    weekday === note.day ?
     <Note
       key={note.id}
       note={note}
       toggleImportance={() => toggleImportanceOf(note.id)}
+      removeNote={() => removeNote(note.id)}
     />
+    : console.log(weekday)
   )
+
+  const getCurrentDay = (weekday) => {
+    /* Select and mark the current day */
+    const d = new Date();
+    const dayInt = d.getDay() - 1;
+    const currDay = daysArray[dayInt];
+    const selectCurrDay = weekday === currDay ? 'today' : '';
+    return selectCurrDay;
+  }
+
+  const days = () => (
+    daysArray.map (weekday =>
+      <div className="day-container" key={weekday}>
+        <h2 className={getCurrentDay(weekday)}>{weekday}</h2>
+        <ul>
+          {rows(weekday)}
+        </ul>
+      </div>
+    )
+  )
+  
 
   const loginForm = () => {
     return (
@@ -123,11 +169,16 @@ const App = () => {
 
   const noteForm = () => (
     /* Toggle the note creation form */
-    <Togglable buttonLabel="new note" ref={noteFormRef}>
+    <Togglable buttonLabel="Add note" ref={noteFormRef}>
       <NoteForm
         onSubmit={addNote}
-        value={newNote}
-        handleChange={handleNoteChange}
+        time={time}
+        day={day}
+        content={content}
+        handleTimeChange={({ target }) => setTime(target.value)}
+        handleDayChange={({ target }) => setDay(target.value)}
+        handleContentChange={({ target }) => setContent(target.value)}
+        handleSubmit={handleNoteChange}
       />
     </Togglable>
   )
@@ -139,11 +190,19 @@ const App = () => {
     window.location.reload();
   }
 
+  // Returns the ISO week of the date.
+  const getNumberOfWeek = () => {
+    const today = new Date();
+    const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+    const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+  }
+
 
   return (
     <div>
       
-      <h1>Bullet journal weekly</h1>
+      <h1>Bullet journal week {getNumberOfWeek()}</h1>
 
       <Notification message={errorMessage} />
 
@@ -157,12 +216,12 @@ const App = () => {
             {noteForm()}
           <div>
             <button onClick={() => setShowAll(!showAll)}>
-              Show {showAll ? 'only important' : 'all'}
+              Show {showAll ? 'only events' : 'all'}
             </button>
           </div>
-          <ul>
-            {rows()}
-          </ul>
+          <div className="days-container">
+          {days()}
+          </div>
         </div>
       }
       

@@ -3,6 +3,8 @@ const baseUrl = '/api/notes'
 
 let token = null
 
+/* The actual commands to the API */
+
 const setToken = newToken => {
   token = `bearer ${newToken}`
 }
@@ -26,4 +28,10 @@ const update = (newObject) => {
   return request.then(response => response.data)
 }
 
-export default { getAll, create, update, setToken }
+const remove = (note) => {
+  console.log('deleted')
+  const request = axios.delete(`${baseUrl}/${note.id}`)
+  return request.then(response => response.data)
+}
+
+export default { getAll, create, update, setToken, remove }
