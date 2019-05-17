@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react' 
+import React, { useState, useEffect } from 'react'
+import ReactDOM from 'react-dom'
 import Note from './components/Note'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
@@ -72,6 +73,10 @@ const App = () => {
     ? notes
     : notes.filter(note => note.important)
 
+  const sortedNotes = notesToShow.sort(function (a, b) {
+    return parseInt(a.time) - parseInt(b.time);
+  });
+
   const addNote = (event) => {
     event.preventDefault()
     const noteObject = {
@@ -95,16 +100,20 @@ const App = () => {
     setContent('')
   }
 
-  const rows = (weekday) => notesToShow.map(note =>
-    weekday === note.day ?
-    <Note
-      key={note.id}
-      note={note}
-      toggleImportance={() => toggleImportanceOf(note.id)}
-      removeNote={() => removeNote(note.id)}
-    />
-    : console.log(weekday)
-  )
+  const rows = (weekday) => {
+    console.log(sortedNotes);
+
+    return sortedNotes.map(note =>
+      weekday === note.day ?
+      <Note
+        key={note.id}
+        note={note}
+        toggleImportance={() => toggleImportanceOf(note.id)}
+        removeNote={() => removeNote(note.id)}
+      />
+      : console.log('')
+    )
+  }
 
   const getCurrentDay = (weekday) => {
     /* Select and mark the current day */
@@ -119,14 +128,13 @@ const App = () => {
     daysArray.map (weekday =>
       <div className="day-container" key={weekday}>
         <h2 className={getCurrentDay(weekday)}>{weekday}</h2>
-        <ul>
+        <ul id={weekday}>
           {rows(weekday)}
         </ul>
       </div>
     )
   )
   
-
   const loginForm = () => {
     return (
       <Togglable buttonLabel='Log in'>
@@ -220,12 +228,11 @@ const App = () => {
             </button>
           </div>
           <div className="days-container">
-          {days()}
+            {days()}
           </div>
         </div>
       }
       
-     
     </div>
   )
 }

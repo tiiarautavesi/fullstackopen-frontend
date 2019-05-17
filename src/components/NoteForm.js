@@ -1,6 +1,6 @@
 import React from 'react' 
 
-const daysArray = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'TODO']
+const daysArray = ['---', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'TODO']
 
 const NoteForm = ({ 
   onSubmit,
@@ -20,15 +20,16 @@ const NoteForm = ({
           <label>Day</label>
           <select value={day} onChange={handleDayChange}>
             { daysArray.map(weekday => 
-              <option value={weekday}>{weekday}</option>
+              <option value={weekday} key={weekday}>{weekday}</option>
             )}
           </select>
         </div>
         <div className="note-container">
           <label>Time</label>
           <select value={time} onChange={handleTimeChange}>
-            <option value="8:00">8:00</option>
-            <option value="9:00">9:00</option>
+            <option value="---">---</option>
+            <option value="08:00">08:00</option>
+            <option value="09:00">09:00</option>
             <option value="10:00">10:00</option>
             <option value="11:00">11:00</option>
             <option value="12:00">12:00</option>
