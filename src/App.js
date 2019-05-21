@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react'
-import ReactDOM from 'react-dom'
+import React, { useState, useEffect } from 'react' // Import hooks
 import Note from './components/Note'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
@@ -10,7 +9,7 @@ import loginService from './services/login'
 
 const daysArray = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'TODO']
 
-const App = () => {
+const App = () => { // Creating custom hooks to create reusable functions
   const [notes, setNotes] = useState([])
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)

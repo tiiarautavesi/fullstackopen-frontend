@@ -1,4 +1,4 @@
-import React from 'react' 
+import React from 'react'
 
 const daysArray = ['---', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'TODO']
 
@@ -27,7 +27,7 @@ const NoteForm = ({
         <div className="note-container">
           <label>Time</label>
           <select value={time} onChange={handleTimeChange}>
-            <option value="---">---</option>
+            <option value="">---</option>
             <option value="08:00">08:00</option>
             <option value="09:00">09:00</option>
             <option value="10:00">10:00</option>
