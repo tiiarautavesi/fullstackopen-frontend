@@ -1,31 +1,42 @@
 import React, { useState, useEffect } from 'react' // Import hooks
-import Note from './components/Note'
+import { connect } from 'react-redux'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import NoteForm from './components/NoteForm'
 import noteService from './services/notes'
-import loginService from './services/login' 
+import loginService from './services/login'
+import { initializeNotes } from './reducers/noteReducer'
+import VisibilityFilter from './components/VisibilityFilter'
+import Notes from './components/Notes'
+
 
 const daysArray = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'TODO']
 
-const App = () => { // Creating custom hooks to create reusable functions
-  const [notes, setNotes] = useState([])
+const App = (props) => { // Creating custom hooks to create reusable functions
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [key, setKey] = useState('')
   const [time, setTime] = useState('')
   const [day, setDay] = useState('')
   const [content, setContent] = useState('')
   const [user, setUser] = useState(null)
 
+  // hook initializes the notes
+  useEffect(() => {
+    props.initializeNotes()
+  },[])
+
+  /*
   useEffect(() => {
     noteService
       .getAll().then(initialNotes => {
         setNotes(initialNotes)
       })
   }, [])
+  */
 
   // effect hook returns the user's logged in state from local storage
   useEffect(() => {
@@ -37,9 +48,10 @@ const App = () => { // Creating custom hooks to create reusable functions
     }
   }, [])
 
+  /*
   const toggleImportanceOf = id => {
     const note = notes.find(n => n.id === id)
-    const changedNote = { ...note, important: !note.important }
+    const changedNote = { ...note, done: !note.done }
 
     noteService
       .update(changedNote).then(returnedNote => {
@@ -70,69 +82,15 @@ const App = () => { // Creating custom hooks to create reusable functions
 
   const notesToShow = showAll
     ? notes
-    : notes.filter(note => note.important)
-
-  const sortedNotes = notesToShow.sort(function (a, b) {
-    return parseInt(a.time) - parseInt(b.time);
-  });
-
-  const addNote = (event) => {
-    event.preventDefault()
-    const noteObject = {
-      time: time,
-      day: day,
-      content: content,
-      date: new Date().toISOString(),
-      important: Math.random() > 0.5
-    }
-
-    console.log(noteObject);
-    noteService
-      .create(noteObject).then(returnedNote => {
-        setNotes(notes.concat(returnedNote))
-      })
-  }
+    : notes.filter(note => note.done)
 
   const handleNoteChange = (event) => {
+    setKey('')
     setDay('')
     setTime('')
     setContent('')
   }
-
-  const rows = (weekday) => {
-    console.log(sortedNotes);
-
-    return sortedNotes.map(note =>
-      weekday === note.day ?
-      <Note
-        key={note.id}
-        note={note}
-        toggleImportance={() => toggleImportanceOf(note.id)}
-        removeNote={() => removeNote(note.id)}
-      />
-      : console.log('')
-    )
-  }
-
-  const getCurrentDay = (weekday) => {
-    /* Select and mark the current day */
-    const d = new Date();
-    const dayInt = d.getDay() - 1;
-    const currDay = daysArray[dayInt];
-    const selectCurrDay = weekday === currDay ? 'today' : '';
-    return selectCurrDay;
-  }
-
-  const days = () => (
-    daysArray.map (weekday =>
-      <div className="day-container" key={weekday}>
-        <h2 className={getCurrentDay(weekday)}>{weekday}</h2>
-        <ul id={weekday}>
-          {rows(weekday)}
-        </ul>
-      </div>
-    )
-  )
+  */
   
   const loginForm = () => {
     return (
@@ -178,14 +136,16 @@ const App = () => { // Creating custom hooks to create reusable functions
     /* Toggle the note creation form */
     <Togglable buttonLabel="Add note" ref={noteFormRef}>
       <NoteForm
-        onSubmit={addNote}
+        //(onSubmit={addNote}
         time={time}
         day={day}
+        key={key}
         content={content}
         handleTimeChange={({ target }) => setTime(target.value)}
         handleDayChange={({ target }) => setDay(target.value)}
+        handleKeyChange={({ target }) => setKey(target.value)}
         handleContentChange={({ target }) => setContent(target.value)}
-        handleSubmit={handleNoteChange}
+        //handleSubmit={handleNoteChange}
       />
     </Togglable>
   )
@@ -223,12 +183,11 @@ const App = () => { // Creating custom hooks to create reusable functions
             {noteForm()}
           <div>
             <button onClick={() => setShowAll(!showAll)}>
-              Show {showAll ? 'only events' : 'all'}
+              Show {showAll ? 'only undone' : 'all'}
             </button>
           </div>
-          <div className="days-container">
-            {days()}
-          </div>
+          <VisibilityFilter />
+          <Notes />
         </div>
       }
       
@@ -236,4 +195,4 @@ const App = () => { // Creating custom hooks to create reusable functions
   )
 }
 
-export default App
+export default connect(null, {initializeNotes})(App)

@@ -24,13 +24,14 @@ const create = async newObject => {
 };
 
 const update = (newObject) => {
+  console.log(newObject)
   const request = axios.put(`${baseUrl}/${newObject.id}`, newObject)
   return request.then(response => response.data)
 }
 
-const remove = (note) => {
+const remove = (noteId) => {
   console.log('deleted')
-  const request = axios.delete(`${baseUrl}/${note.id}`)
+  const request = axios.delete(`${baseUrl}/${noteId}`)
   return request.then(response => response.data)
 }
 
