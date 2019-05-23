@@ -1,5 +1,7 @@
 html {
-  background-image: url('https://images.unsplash.com/photo-1462524500090-89443873e2b4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80');
+  background-image: url('https://images.unsplash.com/photo-1558127920-90f28455f888?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2100&q=80');  
+  /*background-image: url('https://images.unsplash.com/photo-1484980859177-5ac1249fda6f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3242&q=80');*/
+  /*background-image: url('https://images.unsplash.com/photo-1462524500090-89443873e2b4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80');*/
   background-position: center;
   background-attachment: fixed;
   background-repeat: no-repeat;
@@ -66,7 +68,9 @@ button:hover {
 }
 
 .imp-btn,
-.remove-btn {
+.remove-btn,
+.key {
+  display: inline;
   background-color: transparent;
   border: none;
   padding: none;
@@ -75,16 +79,16 @@ button:hover {
   padding: 0.1rem;
 }
 
-.makeUnimportant:after {
-  content: '\f18c';
-  font-family: FontAwesome;
-  color: green;
-}
-.makeImportant:after {
-  content: '\f18c';
+.uncompleted .imp-btn:after {
+  content: '\f058';
   font-family: FontAwesome;
   color: green;
   opacity: 0.2;
+}
+.completed .imp-btn:after {
+  content: '\f058';
+  font-family: FontAwesome;
+  color: green;
 }
 
 .remove-btn:after {
@@ -215,9 +219,21 @@ label {
 }
 
 select {
-  min-width: 9rem;
+  min-width: 7rem;
+  display: block;
+  outline: none;
+  border-radius: 5rem;
+  border: 0;
+  font-size: 1rem;
+  box-sizing: inherit;
+  background: #fff;
+  font-family: 'Cutive Mono', monospace;
 }
 
 .today {
   text-decoration: underline;
+}
+
+.completed {
+  text-decoration: line-through;
 }
